@@ -4,9 +4,9 @@ import prisma from "@/lib/prisma";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { token: string } }
+  { params }: { params: Promise<{ token: string }> }
 ) {
-  const token = params.token;
+  const { token } = await params;
   const download = await verifyDownloadToken(token);
 
   if (!download) {

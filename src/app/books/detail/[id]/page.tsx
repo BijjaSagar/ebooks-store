@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { ShoppingCart, Truck, ShieldCheck, Download, Star, Share2, Facebook, Twitter, Mail } from "lucide-react";
 
-export default function BookDetailPage({ params }: { params: { id: string } }) {
+export default async function BookDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   // Mock data for now
   const book = {
-    id: params.id,
+    id,
     title: "1984 | A Masterpiece of Dystopian Fiction",
     author: "George Orwell",
     description: `A masterpiece of rebellion and control. Winston Smith works at the Ministry of Truth, rewriting history to suit the whims of the Party. But deep down, he feels a sense of unrest. This dystopian classic explores themes of surveillance, power, and the fragility of truth in a chillingly relatable future. 
