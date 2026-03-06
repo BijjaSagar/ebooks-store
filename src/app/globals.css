@@ -1,39 +1,165 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", var(--font-inter), ui-sans-serif;
-  --font-serif: "Playfair Display", var(--font-playfair), serif;
+  /* === FONTS === */
+  --font-sans: "Inter", ui-sans-serif, system-ui;
+  --font-serif: "Playfair Display", Georgia, serif;
 
-  --color-background: #F8F9FA;
-  --color-foreground: #333333;
-  --color-muted: #E9ECEF;
-  --color-muted-foreground: #6C757D;
-  --color-primary: #1A73E8; /* Modern Professional Blue */
-  --color-accent: #FFB703;  /* Vibrant Gold */
-  --color-border: #DEE2E6;
+  /* === PREMIUM GEN-Z PALETTE === */
+  --color-canvas:     #FFFEF7;       /* Warm off-white */
+  --color-ink:        #0D0D1A;       /* Deep midnight */
+  --color-ink-soft:   #1A1A2E;       /* Slightly lighter midnight */
+
+  --color-primary:    #7C3AED;       /* Electric Violet */
+  --color-primary-dark: #5B21B6;    /* Deep Violet */
+  --color-primary-glow: rgba(124,58,237,0.25);
+
+  --color-fire:       #FF6B6B;       /* Hot coral-red */
+  --color-fire-soft:  rgba(255,107,107,0.15);
+
+  --color-gold:       #FFD166;       /* Warm gold */
+  --color-gold-soft:  rgba(255,209,102,0.15);
+
+  --color-emerald:    #06EF8F;       /* Neon green (digital) */
+  --color-emerald-soft: rgba(6,239,143,0.15);
+
+  /* === UI TOKENS === */
+  --color-background: var(--color-canvas);
+  --color-foreground: var(--color-ink);
+  --color-muted:      #F0EFE8;
+  --color-muted-foreground: #6B6B80;
+  --color-border:     #E5E4DC;
+  --color-border-dark: rgba(255,255,255,0.08);
+  --color-accent:     var(--color-gold);
 }
 
+/* === BASE === */
 @layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
-    @apply bg-background text-foreground font-sans antialiased selection:bg-accent/30;
+    @apply bg-canvas text-ink font-sans antialiased;
+    background-image:
+      radial-gradient(ellipse at 10% 0%, rgba(124,58,237,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse at 90% 100%, rgba(255,107,107,0.04) 0%, transparent 60%);
   }
+
   h1, h2, h3, h4, h5, h6 {
-    @apply font-serif font-black tracking-tight text-foreground leading-[1.1];
+    @apply font-serif font-black tracking-tight leading-[1.1];
   }
 }
 
+/* =========================================
+   COMPONENT CLASSES
+   ========================================= */
+
+/* --- Book Card --- */
 .book-card {
-  @apply bg-white border border-border rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:border-primary/20 cursor-pointer;
+  @apply bg-white border border-border rounded-3xl overflow-hidden
+         transition-all duration-500
+         hover:shadow-2xl hover:-translate-y-2 hover:border-primary/30
+         cursor-pointer;
 }
 
+/* --- Dark Glass Card --- */
+.glass-card {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.5rem;
+}
+
+/* --- Input --- */
 .input-minimal {
-  @apply bg-white border border-border px-6 py-3 rounded-xl focus:ring-4 focus:ring-primary/10 focus:border-primary focus:outline-none transition-all font-medium;
+  @apply bg-white border border-border px-5 py-3 rounded-xl
+         focus:ring-4 focus:ring-primary/10 focus:border-primary
+         focus:outline-none transition-all font-medium text-sm;
 }
 
+/* --- Primary CTA Button --- */
 .btn-primary {
-  @apply bg-primary text-white px-8 py-3 rounded-full font-black text-sm uppercase tracking-widest transition-all hover:opacity-90 hover:shadow-lg hover:shadow-primary/20 active:scale-95 flex items-center justify-center gap-2;
+  @apply relative inline-flex items-center justify-center gap-2
+         px-8 py-3.5 rounded-full font-black text-sm uppercase tracking-widest
+         text-white transition-all duration-300
+         active:scale-95 overflow-hidden;
+  background: linear-gradient(135deg, #7C3AED, #5B21B6);
+  box-shadow: 0 4px 24px rgba(124, 58, 237, 0.35);
 }
 
+.btn-primary:hover {
+  box-shadow: 0 8px 32px rgba(124, 58, 237, 0.55);
+  transform: translateY(-1px);
+}
+
+/* --- Secondary Outlined Button --- */
 .btn-secondary {
-  @apply border-2 border-primary text-primary px-8 py-3 rounded-full font-black text-sm uppercase tracking-widest transition-all hover:bg-primary hover:text-white active:scale-95 flex items-center justify-center gap-2;
+  @apply inline-flex items-center justify-center gap-2
+         px-8 py-3.5 rounded-full font-black text-sm uppercase tracking-widest
+         border-2 border-ink text-ink transition-all duration-300
+         hover:bg-ink hover:text-white active:scale-95;
+}
+
+/* --- Light ghost button on dark BG --- */
+.btn-ghost-light {
+  @apply inline-flex items-center justify-center gap-2
+         px-8 py-3.5 rounded-full font-black text-sm uppercase tracking-widest
+         border-2 border-white/30 text-white transition-all duration-300
+         hover:bg-white hover:text-ink active:scale-95;
+}
+
+/* --- Category / Tag pill --- */
+.pill {
+  @apply px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 cursor-pointer;
+}
+.pill-primary {
+  @apply px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 cursor-pointer bg-primary text-white;
+}
+.pill-outline {
+  @apply px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 cursor-pointer border border-border text-muted-foreground hover:border-primary hover:text-primary bg-white;
+}
+.pill-gold {
+  @apply px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 cursor-pointer bg-gold text-ink;
+}
+.pill-fire {
+  @apply px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 cursor-pointer bg-fire text-white;
+}
+.pill-emerald {
+  @apply px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 cursor-pointer bg-emerald text-ink;
+}
+
+/* --- Section heading with underline accent --- */
+.section-heading {
+  @apply font-serif font-black italic tracking-tight;
+}
+
+/* --- Neon glow text --- */
+.text-glow-primary {
+  text-shadow: 0 0 40px rgba(124,58,237,0.6);
+}
+.text-glow-gold {
+  text-shadow: 0 0 40px rgba(255,209,102,0.5);
+}
+.text-glow-fire {
+  text-shadow: 0 0 40px rgba(255,107,107,0.5);
+}
+
+/* --- Gradient text utility --- */
+.text-gradient-primary {
+  background: linear-gradient(135deg, #7C3AED, #FF6B6B);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.text-gradient-gold {
+  background: linear-gradient(135deg, #FFD166, #FF6B6B);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
