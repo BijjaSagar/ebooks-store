@@ -14,9 +14,26 @@ import {
   ChevronRight,
   Plus
 } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/auth/signin");
+    } else if (status === "authenticated" && (session?.user as any)?.role !== "ADMIN") {
+      router.push("/user/dashboard");
+    }
+  }, [session, status, router]);
+
+  if (status === "loading" || status === "unauthenticated" || (session?.user as any)?.role !== "ADMIN") {
+    return <div className="min-h-screen bg-[#1c252e] flex items-center justify-center text-white">Loading Admin Console...</div>;
+  }
 
   const menuItems = [
     { label: "Dashboard", icon: <BarChart3 size={18} />, path: "/admin/dashboard" },
@@ -63,7 +80,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </nav>
 
         <div className="p-6 border-t border-white/5 space-y-4">
-           <button className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-gray-500 hover:text-red-400 hover:bg-red-400/5 transition-all group font-black uppercase tracking-widest text-[10px]">
+           <button 
+             onClick={() => signOut({ callbackUrl: "/" })}
+             className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-gray-500 hover:text-red-400 hover:bg-red-400/5 transition-all group font-black uppercase tracking-widest text-[10px]"
+           >
               <LogOut size={16} /> <span>Sign Out</span>
            </button>
            <div className="flex items-center gap-3 p-3 bg-white/5 rounded-2xl border border-white/5">
