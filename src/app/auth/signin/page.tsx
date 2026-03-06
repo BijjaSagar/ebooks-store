@@ -23,10 +23,17 @@ export default function SignInPage() {
         password: form.password,
         redirect: false,
       });
+      const sessionResponse = await fetch("/api/auth/session");
+      const sessionData = await sessionResponse.json();
+      
       if (res?.error) {
         setError("Invalid email or password. Please try again.");
       } else {
-        router.push("/user/dashboard");
+        if (sessionData?.user?.role === "ADMIN") {
+          router.push("/admin/dashboard");
+        } else {
+          router.push("/user/dashboard");
+        }
         router.refresh();
       }
     } catch {
