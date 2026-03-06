@@ -11,8 +11,8 @@ import { useRouter } from "next/navigation";
 
 const navLinks = [
   { label: "All Books", href: "/books" },
-  { label: "New Arrivals", href: "/books" },
-  { label: "Digital Store", href: "/books" },
+  { label: "New Arrivals", href: "/books/category/new-arrivals" },
+  { label: "Digital Store", href: "/books/category/digital" },
   { label: "Admin", href: "/admin/dashboard" },
 ];
 

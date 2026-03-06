@@ -29,6 +29,20 @@ export default async function CategoryPage({ params, searchParams }: { params: {
         },
         orderBy: { createdAt: "desc" },
       });
+    } else if (slug === "new-arrivals") {
+      title = "New Arrivals";
+      books = await prisma.book.findMany({
+        where: {
+          ...(query ? {
+            OR: [
+              { title: { contains: query, mode: "insensitive" } },
+              { author: { contains: query, mode: "insensitive" } },
+            ]
+          } : {})
+        },
+        orderBy: { createdAt: "desc" },
+        take: 20, // get top 20 latest books 
+      });
     } else {
       const category = await prisma.category.findUnique({
         where: { slug }
@@ -70,7 +84,7 @@ export default async function CategoryPage({ params, searchParams }: { params: {
         <div className="relative z-10 max-w-3xl mx-auto space-y-6">
            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-ink mx-auto"
               style={{ background: "linear-gradient(135deg, #06EF8F, #FFD166)" }}>
-              ✦ {slug === "digital" ? "Instant Access" : "Curated Genre"}
+              ✦ {slug === "digital" ? "Instant Access" : slug === "new-arrivals" ? "Latest Drops" : "Curated Genre"}
            </span>
            <h1 className="text-5xl md:text-7xl font-serif font-black italic text-white leading-tight">
               {title} <span style={{ background: "linear-gradient(135deg, #7C3AED, #FF6B6B)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Books.</span>
