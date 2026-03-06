@@ -47,12 +47,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               href={item.path}
               className={`flex items-center justify-between gap-3 px-4 py-3 rounded-xl transition-all group ${
                 pathname === item.path 
-                  ? "bg-accent-blue text-white shadow-lg shadow-accent-blue/20 font-black italic" 
+                  ? "bg-primary text-white shadow-lg shadow-primary/20 font-black italic" 
                   : "hover:bg-white/5 hover:text-white"
               }`}
             >
               <div className="flex items-center gap-3">
-                <span className={`${pathname === item.path ? "text-white" : "text-gray-500 group-hover:text-accent-blue transition-colors"}`}>
+                <span className={`${pathname === item.path ? "text-white" : "text-gray-500 group-hover:text-primary transition-colors"}`}>
                    {item.icon}
                 </span>
                 <span className="text-sm tracking-wide">{item.label}</span>
@@ -67,7 +67,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <LogOut size={16} /> <span>Sign Out</span>
            </button>
            <div className="flex items-center gap-3 p-3 bg-white/5 rounded-2xl border border-white/5">
-              <div className="h-8 w-8 rounded-full bg-accent-blue/20 border border-accent-blue flex items-center justify-center font-black text-xs">AD</div>
+              <div className="h-8 w-8 rounded-full bg-primary/20 border border-primary flex items-center justify-center font-black text-xs">AD</div>
               <div className="overflow-hidden">
                  <p className="text-xs font-black text-white truncate italic">Admin User</p>
                  <p className="text-[9px] font-medium text-gray-500 truncate">admin@delhibooks.com</p>
@@ -80,7 +80,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <main className="ml-72 flex-grow p-10 bg-white min-h-screen">
         <header className="flex justify-between items-center mb-10 pb-6 border-b border-border">
            <div>
-              <h1 className="text-3xl font-serif font-black italic text-accent opacity-90">Dashboard Overview</h1>
+              <h1 className="text-3xl font-serif font-black italic text-foreground opacity-90">Dashboard Overview</h1>
               <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mt-1">Real-time bookstore intelligence</p>
            </div>
            <div className="flex gap-3">

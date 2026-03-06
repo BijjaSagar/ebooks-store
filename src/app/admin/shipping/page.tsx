@@ -20,13 +20,13 @@ export default function AdminShippingPage() {
             <div className="mx-auto w-16 h-16 bg-accent text-white rounded-2xl flex items-center justify-center shadow-xl mb-4 group-hover:rotate-12 transition-transform">
                <Truck size={32} strokeWidth={2.5} />
             </div>
-            <h1 className="text-4xl md:text-5xl font-serif font-black italic color-accent">Global Logistics Engine</h1>
+            <h1 className="text-4xl md:text-5xl font-serif font-black italic text-accent">Global Logistics Engine</h1>
             <p className="text-muted-foreground font-medium text-lg">
                Configure regional shipping rates, free delivery thresholds, and carrier zones.
             </p>
             <div className="pt-4 flex justify-center gap-4">
                <button className="btn-primary py-4 px-10 italic font-black shadow-xl flex items-center gap-2">
-                  <Plus size={20} spellCheck={false} /> New Shipping Zone
+                  <Plus size={20} /> New Shipping Zone
                </button>
             </div>
          </div>

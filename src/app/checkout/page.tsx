@@ -64,6 +64,12 @@ export default function CheckoutPage() {
     }
 
     if (paymentMethod === "razorpay") {
+        if (!orderResult.orderId) {
+            alert("Order creation did not return a valid ID.");
+            setLoading(false);
+            return;
+        }
+
         // 2. Create Razorpay Order
         const rzpOrder = await createRazorpayOrder(cartTotal + shippingCharge, orderResult.orderId);
         
