@@ -1,40 +1,61 @@
 import BookCard from "@/components/books/BookCard";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
-import { Filter, Search, ChevronRight } from "lucide-react";
+import { Filter, ChevronRight } from "lucide-react";
+import { notFound } from "next/navigation";
 
-export default function BookListingPage() {
-  return <BookPageRenderer />;
-}
+export default async function CategoryPage({ params, searchParams }: { params: { slug: string }, searchParams?: { q?: string } }) {
+  // Await params to fix Next.js 15+ routing requirements
+  const resolvedParams = await params;
+  const slug = resolvedParams.slug;
+  const resolvedSearchParams = searchParams ? await searchParams : {};
+  const query = resolvedSearchParams?.q || "";
 
-async function BookPageRenderer({ searchParams }: { searchParams?: { q?: string } }) {
-  // We'll await searchParams explicitly to fix Next.js 15+ async params requirements
-  const resolvedParams = searchParams ? await searchParams : {};
-  const query = resolvedParams?.q || "";
-
-  // Fetch from database
+  let title = "Category";
   let books: any[] = [];
+
   try {
-    if (query) {
-       books = await prisma.book.findMany({
-          where: {
+    if (slug === "digital") {
+      title = "Digital Editions";
+      books = await prisma.book.findMany({
+        where: {
+          formatPDF: true,
+          ...(query ? {
             OR: [
               { title: { contains: query, mode: "insensitive" } },
               { author: { contains: query, mode: "insensitive" } },
-            ],
-          },
-          orderBy: { createdAt: "desc" },
-       });
+            ]
+          } : {})
+        },
+        orderBy: { createdAt: "desc" },
+      });
     } else {
-       books = await prisma.book.findMany({
-          orderBy: { createdAt: "desc" },
-       });
+      const category = await prisma.category.findUnique({
+        where: { slug }
+      });
+
+      if (!category) return notFound();
+      
+      title = category.name;
+      books = await prisma.book.findMany({
+        where: {
+          categoryId: category.id,
+          ...(query ? {
+            OR: [
+              { title: { contains: query, mode: "insensitive" } },
+              { author: { contains: query, mode: "insensitive" } },
+            ]
+          } : {})
+        },
+        orderBy: { createdAt: "desc" },
+      });
     }
   } catch (error) {
-    console.error("Failed to fetch books", error);
+    console.error("Failed to fetch category books", error);
   }
 
   const filters = ["All", "Fiction", "Non-Fiction", "Digital", "Academic"];
+  const currentCategory = filters.find(f => f.toLowerCase().replace(" ", "-") === slug) || title;
 
   return (
     <div className="space-y-12 pb-20 fade-in animate-in">
@@ -44,36 +65,17 @@ async function BookPageRenderer({ searchParams }: { searchParams?: { q?: string 
         style={{ background: "linear-gradient(135deg, #0D0D1A 0%, #1A0A2E 100%)" }}
       >
         <div className="absolute top-0 right-0 w-80 h-80 bg-primary/20 blur-[100px] rounded-full pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-fire/20 blur-[100px] rounded-full pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-emerald-500/20 blur-[100px] rounded-full pointer-events-none" />
         
         <div className="relative z-10 max-w-3xl mx-auto space-y-6">
            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-ink mx-auto"
-              style={{ background: "linear-gradient(135deg, #FFD166, #FF6B6B)" }}>
-              ✦ The Archive
+              style={{ background: "linear-gradient(135deg, #06EF8F, #FFD166)" }}>
+              ✦ {slug === "digital" ? "Instant Access" : "Curated Genre"}
            </span>
            <h1 className="text-5xl md:text-7xl font-serif font-black italic text-white leading-tight">
-              {query ? (
-                <>Search: <span style={{ color: "#06EF8F" }}>"{query}"</span></>
-              ) : (
-                <>Curated <span style={{ background: "linear-gradient(135deg, #7C3AED, #FF6B6B)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Collection.</span></>
-              )}
+              {title} <span style={{ background: "linear-gradient(135deg, #7C3AED, #FF6B6B)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Books.</span>
            </h1>
-           <p className="text-white/50 text-lg font-medium">Explore our full catalog of physical and digital reads.</p>
-
-           <form action="/books" method="GET" className="relative max-w-xl mx-auto mt-8">
-              <Search size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <input 
-                 type="text" 
-                 name="q"
-                 defaultValue={query}
-                 placeholder="Search by title or author..." 
-                 className="w-full h-16 pl-14 pr-32 rounded-full border border-white/10 bg-white/5 focus:bg-white/10 focus:outline-none focus:ring-2 focus:ring-primary/40 text-white font-medium transition-all shadow-2xl"
-              />
-              <button type="submit" className="absolute right-2 top-2 bottom-2 px-6 rounded-full text-[11px] font-black uppercase tracking-widest text-white transition-all hover:scale-105 active:scale-95"
-                style={{ background: "linear-gradient(135deg, #7C3AED, #5B21B6)" }}>
-                Search
-              </button>
-           </form>
+           <p className="text-white/50 text-lg font-medium">Explore the best selection of {title.toLowerCase()} reads.</p>
         </div>
       </section>
 
@@ -83,7 +85,7 @@ async function BookPageRenderer({ searchParams }: { searchParams?: { q?: string 
            <div className="space-y-6">
               <div className="flex items-center justify-between border-b border-border pb-4">
                  <h3 className="text-xs font-black uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-2">
-                    <Filter size={14} /> Filter
+                    <Filter size={14} /> Sections
                  </h3>
               </div>
               <div className="flex flex-col gap-2">
@@ -92,13 +94,13 @@ async function BookPageRenderer({ searchParams }: { searchParams?: { q?: string 
                        href={cat === "All" ? "/books" : `/books/category/${cat.toLowerCase().replace(" ", "-")}`}
                        key={cat}
                        className={`flex items-center justify-between px-6 py-4 rounded-xl transition-all font-black text-xs uppercase tracking-widest ${
-                          cat === "All" 
+                          cat.toLowerCase().replace(" ", "-") === slug 
                              ? "bg-ink text-white shadow-xl translate-x-1" 
                              : "text-muted-foreground border border-border hover:border-primary hover:text-primary"
                        }`}
                     >
                        {cat}
-                       {cat === "All" && <ChevronRight size={14} />}
+                       {cat.toLowerCase().replace(" ", "-") === slug && <ChevronRight size={14} />}
                     </Link>
                  ))}
               </div>
@@ -109,7 +111,7 @@ async function BookPageRenderer({ searchParams }: { searchParams?: { q?: string 
         <main className="lg:col-span-9 space-y-8">
            <div className="flex items-center justify-between border-b border-border pb-4">
               <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                 Showing <span className="text-ink text-xs">{books.length}</span> Results
+                 Showing <span className="text-ink text-xs">{books.length}</span> Results in {title}
               </div>
            </div>
 
@@ -122,8 +124,8 @@ async function BookPageRenderer({ searchParams }: { searchParams?: { q?: string 
            ) : (
              <div className="py-24 text-center space-y-4 bg-muted/30 rounded-3xl border border-dashed border-border">
                <h3 className="text-2xl font-serif font-black italic text-ink">No books found</h3>
-               <p className="text-muted-foreground text-sm font-medium">Try adjusting your search terms.</p>
-               <Link href="/books" className="btn-secondary mt-4">Clear Search</Link>
+               <p className="text-muted-foreground text-sm font-medium">There are currently no books in the {title} category.</p>
+               <Link href="/books" className="btn-secondary mt-4">Browse All Books</Link>
              </div>
            )}
         </main>
